@@ -203,12 +203,14 @@ public class MainActivity extends AppCompatActivity {
                     botones[24].setBackgroundColor(Color.BLUE);
                     botones[25].setBackgroundColor(Color.GRAY);
                     txtJugador.setText("Jugador 1");
+                    txtPuntos.setText(Integer.toString(puntosJug1));
                     break;
                 case (R.id.btnJug2):
                     jugadorActual = 2;
                     botones[25].setBackgroundColor(Color.BLUE);
                     botones[24].setBackgroundColor(Color.GRAY);
                     txtJugador.setText("Jugador 2");
+                    txtPuntos.setText(Integer.toString(puntosJug2));
                     break;
             }
         }
