@@ -44,16 +44,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 String img1 = "f" + cont1 + "1";
                 ficha1.setBackgroundResource(getResources().getIdentifier(img1, "drawable", getPackageName()));
-
-                if (cont1 == cont2 && cont2 == cont3 && cont3 == cont1) {
-                    ficha1.setEnabled(false);
-                    ficha2.setEnabled(false);
-                    ficha3.setEnabled(false);
-
-                    Toast victoria = Toast.makeText(getApplicationContext(), "HAS GANADO", Toast.LENGTH_LONG);
-                    victoria.setGravity(Gravity.CENTER|Gravity.CENTER, 0,0);
-                    victoria.show();
-                }
+                comprobarVictoria(ficha1, ficha2, ficha3, cont1, cont2, cont3);
             }
         });
         ficha2.setOnClickListener(new View.OnClickListener() {
@@ -66,16 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 String img2 = "f" + cont2 + "2";
                 ficha2.setBackgroundResource(getResources().getIdentifier(img2, "drawable", getPackageName()));
-
-                if (cont1 == cont2 && cont2 == cont3 && cont3 == cont1) {
-                    ficha1.setEnabled(false);
-                    ficha2.setEnabled(false);
-                    ficha3.setEnabled(false);
-
-                    Toast victoria = Toast.makeText(getApplicationContext(), "HAS GANADO", Toast.LENGTH_LONG);
-                    victoria.setGravity(Gravity.CENTER|Gravity.CENTER, 0,0);
-                    victoria.show();
-                }
+                comprobarVictoria(ficha1, ficha2, ficha3, cont1, cont2, cont3);
             }
         });
         ficha3.setOnClickListener(new View.OnClickListener() {
@@ -88,18 +70,21 @@ public class MainActivity extends AppCompatActivity {
                 }
                 String img3 = "f"+cont3+"3";
                 ficha3.setBackgroundResource(getResources().getIdentifier(img3, "drawable", getPackageName()));
+                comprobarVictoria(ficha1, ficha2, ficha3, cont1, cont2, cont3);
 
-                if (cont1 == cont2 && cont2 == cont3 && cont3 == cont1) {
-                    ficha1.setEnabled(false);
-                    ficha2.setEnabled(false);
-                    ficha3.setEnabled(false);
-
-                    Toast victoria = Toast.makeText(getApplicationContext(), "HAS GANADO", Toast.LENGTH_LONG);
-                    victoria.setGravity(Gravity.CENTER|Gravity.CENTER, 0,0);
-                    victoria.show();
-                }
             }
         });
+    }
+    public void comprobarVictoria(Button ficha1, Button ficha2, Button ficha3, int cont1, int cont2, int cont3){
+        if (cont1 == cont2 && cont2 == cont3 && cont3 == cont1) {
+            ficha1.setEnabled(false);
+            ficha2.setEnabled(false);
+            ficha3.setEnabled(false);
+
+            Toast victoria = Toast.makeText(getApplicationContext(), "HAS GANADO", Toast.LENGTH_LONG);
+            victoria.setGravity(Gravity.CENTER | Gravity.CENTER, 0, 0);
+            victoria.show();
+        }
     }
     public void reiniciar(View v){
         reiniciarActivity(this);
