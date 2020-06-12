@@ -1,28 +1,130 @@
 package com.example.sopaletras;
 
 import androidx.appcompat.app.AppCompatActivity;
-
+;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import java.util.Random;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity {
-
+    private String[] arrayAbecedario = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
+    private SopaLetras sopaletras;
+    RequestQueue queue;
+    String URL = "http://192.168.1.136/sopaletrasApi/apiv1.php";
+    boolean clicked = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        for(int i=0; i<10; i++){
-            for(int j=0; j<10; j++){
-                Random r = new Random();
-                ImageView img = (ImageView) findViewById(idsImagenes[i][j]);
-                img.setImageResource(letras[r.nextInt(26)]);
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            setContentView(R.layout.activity_main);
+        }
+        queue = Volley.newRequestQueue(this);
+        StringRequest request = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                String cadena = response.replaceAll("\\[", "").replaceAll("\\]", "").replaceAll("\"", "");
+                Palabra.dividirPalabra(cadena);
+                iniciarJuego();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("error",error.toString());
+            }
+        });
+        queue.add(request);
+    }
+    public void reiniciar(View v){
+        reiniciarActivity(this);
+    }
+    public void reiniciarActivity(Activity actividad){
+        Intent intent = new Intent();
+        intent.setClass(actividad, actividad.getClass());
+        actividad.startActivity(intent);
+        actividad.finish();
+    }
+    private void iniciarJuego(){
+        sopaletras = new SopaLetras();
+        for(int i = 0; i < 10; i++){
+            for(int j = 0; j < 10; j++){
+                if(sopaletras.getTablero().get(i).get(j) == "0"){
+                    ImageView img= (ImageView) findViewById(images[i][j]);
+                    img.setImageResource(abecedario[(int)(Math.random()*25+1)]);
+                }else{
+                    ImageView img= (ImageView) findViewById(images[i][j]);
+                    img.setImageResource(abecedario[convertirLetraAIndice(sopaletras.getTablero().get(i).get(j))]);
+                }
             }
         }
     }
-    private final int idsImagenes[][] = {
+
+    private int convertirLetraAIndice(String letra){
+        for(int i = 0; i < arrayAbecedario.length; i++){
+            letra = letra.replaceAll("\\*", "");
+            if(letra.equals(arrayAbecedario[i])){
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    public void clickBoton(View v){
+        if(sopaletras.palabras >0){
+            for(int i = 0; i<images.length; i++){
+                for(int j = 0; j<images[i].length; j++){
+                    if(v.getId() == images[i][j]){
+                        if(clicked){
+                            if(sopaletras.comprobarSeleccion(i, j)){
+                                quitarPalabraEncontrada();
+                                Toast palabraEncontrada = Toast.makeText(getApplicationContext(), "Restantes "+sopaletras.palabras, Toast.LENGTH_LONG);
+                                palabraEncontrada.setGravity(Gravity.CENTER|Gravity.CENTER, 0,0);
+                                palabraEncontrada.show();
+                                if(sopaletras.palabras == 0){
+                                    Toast victoria = Toast.makeText(getApplicationContext(), "HAS GANADO!!", Toast.LENGTH_LONG);
+                                    victoria.setGravity(Gravity.CENTER|Gravity.CENTER, 0,0);
+                                    victoria.show();
+                                }
+                            }
+                            clicked = false;
+                        }else{
+                            clicked = true;
+                            sopaletras.setAlmacenado(i, j);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void quitarPalabraEncontrada(){
+        for(int i = 0; i < 10; i++){
+            for(int j = 0; j < 10; j++){
+                if(sopaletras.getTablero().get(i).get(j).length() >1){
+                    ImageView img= (ImageView) findViewById(images[i][j]);
+                    img.setImageResource(android.R.color.transparent);
+                }
+            }
+        }
+    }
+    private final int images[][] = {
             {R.id.img1, R.id.img2, R.id.img3, R.id.img4, R.id.img5, R.id.img6, R.id.img7, R.id.img8, R.id.img9, R.id.img10},
             { R.id.img11,R.id.img12,R.id.img13,R.id.img14,R.id.img15,R.id.img16,R.id.img17,R.id.img18,R.id.img19,R.id.img20},
             { R.id.img21,R.id.img22,R.id.img23,R.id.img24,R.id.img25,R.id.img26,R.id.img27,R.id.img28,R.id.img29,R.id.img30},
@@ -35,10 +137,10 @@ public class MainActivity extends AppCompatActivity {
             { R.id.img91,R.id.img92,R.id.img93,R.id.img94,R.id.img95,R.id.img96,R.id.img97,R.id.img98,R.id.img99,R.id.img100}
     };
 
-    private final int letras[] = {
+    private final int abecedario[] = {
             R.drawable.a,R.drawable.b,R.drawable.c,R.drawable.d,R.drawable.e,R.drawable.f,
             R.drawable.g,R.drawable.h,R.drawable.i,R.drawable.j,R.drawable.k,R.drawable.l,
             R.drawable.m,R.drawable.n,R.drawable.o,R.drawable.p,R.drawable.q,R.drawable.r,
             R.drawable.s,R.drawable.t,R.drawable.u,R.drawable.v,R.drawable.w,R.drawable.x,
-            R.drawable.y,R.drawable.z};
+            R.drawable.y, R.drawable.z};
 }
