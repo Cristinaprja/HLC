@@ -1,6 +1,8 @@
 package com.example.puzzle;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -10,9 +12,7 @@ import android.content.Intent;
 
 public class MainActivity extends AppCompatActivity {
     final int NUMPUZZLES = 5;
-    private int cont1 = 0;
-    private int cont2 = 0;
-    private int cont3 = 0;
+    private int cont1, cont2, cont3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,7 +21,6 @@ public class MainActivity extends AppCompatActivity {
         final Button ficha1 = findViewById(R.id.img1);
         final Button ficha2 = findViewById(R.id.img2);
         final Button ficha3 = findViewById(R.id.img3);
-        final Button reiniciar = findViewById(R.id.btnReiniciar);
 
         cont1 = (int) (Math.random()*NUMPUZZLES+1);
         String img1 = "f"+cont1+"1";
@@ -101,18 +100,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        reiniciar.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Intent intent = getIntent();
-                overridePendingTransition(0, 0);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                finish();
-                overridePendingTransition(0, 0);
-                startActivity(intent);
-            }
-        });
     }
-
-
+    public void reiniciar(View v){
+        reiniciarActivity(this);
+    }
+    public void reiniciarActivity(Activity actividad){
+        Intent intent = new Intent();
+        intent.setClass(actividad, actividad.getClass());
+        actividad.startActivity(intent);
+        actividad.finish();
+    }
 }
